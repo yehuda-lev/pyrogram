@@ -384,7 +384,8 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        reactions: List["types.Reaction"] = None
+        reactions: List["types.Reaction"] = None,
+        _raw = None
     ):
         super().__init__(client)
 
@@ -457,6 +458,7 @@ class Message(Object, Update):
         self.video_chat_members_invited = video_chat_members_invited
         self.web_app_data = web_app_data
         self.reactions = reactions
+        self._raw = _raw
 
     @staticmethod
     async def _parse(
@@ -468,7 +470,7 @@ class Message(Object, Update):
         replies: int = 1
     ):
         if isinstance(message, raw.types.MessageEmpty):
-            return Message(id=message.id, empty=True, client=client)
+            return Message(id=message.id, empty=True, client=client, _raw=message)
 
         from_id = utils.get_raw_peer_id(message.from_id)
         peer_id = utils.get_raw_peer_id(message.peer_id)
@@ -613,6 +615,8 @@ class Message(Object, Update):
                         pass
 
             client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
+
+            parsed_message._raw = message
 
             return parsed_message
 
@@ -850,6 +854,8 @@ class Message(Object, Update):
 
             if not parsed_message.poll:  # Do not cache poll messages
                 client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
+
+            parsed_message._raw = message
 
             return parsed_message
 
