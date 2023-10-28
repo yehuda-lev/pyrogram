@@ -100,7 +100,8 @@ class TCP:
                     self.writer.write(data)
                     await self.writer.drain()
             except Exception as e:
-                log.info("Send exception: %s %s", type(e).__name__, e)
+                # error coming somewhere here
+                log.exception("Send exception: %s %s", type(e).__name__, e)
                 raise OSError(e)
 
     async def recv(self, length: int = 0):
