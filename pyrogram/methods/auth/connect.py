@@ -37,18 +37,14 @@ class Connect:
         if self.is_connected:
             raise ConnectionError("Client is already connected")
 
-        print("Line 40")
         await self.load_session()
-        print("Line 42")
 
         self.session = Session(
             self, await self.storage.dc_id(),
             await self.storage.auth_key(), await self.storage.test_mode()
         )
-        print("Line 48")
 
         await self.session.start()
-        print("Line 51")
 
         self.is_connected = True
 
