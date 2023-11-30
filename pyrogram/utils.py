@@ -377,7 +377,11 @@ def get_reply_head_fm(message_thread_id: int, reply_to_message_id: int) -> raw.t
         reply_to_message_id or
         message_thread_id
     ):
-        # TODO: 73ec805
+        # TODO: 22c0f6d5
+        # reply_to_peer_id:flags.1?InputPeer
+        # quote_text:flags.2?string
+        # quote_entities:flags.3?Vector<MessageEntity>
+        # quote_offset:flags.4?int
         if not reply_to_message_id:
             reply_to = raw.types.InputReplyToMessage(
                 reply_to_msg_id=message_thread_id,
