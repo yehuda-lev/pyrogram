@@ -4,11 +4,17 @@ CHANNEL_PUBLIC_GROUP_NA	The channel/supergroup is not available
 CHAT_ADMIN_INVITE_REQUIRED	You don't have rights to invite other users
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
 CHAT_FORBIDDEN	You cannot write in this chat
+CHAT_SEND_AUDIOS_FORBIDDEN	You cannot send audio messages in this chat
+CHAT_SEND_DOCS_FORBIDDEN	You cannot send document messages in this chat
 CHAT_SEND_GIFS_FORBIDDEN	You can't send animations in this chat
 CHAT_SEND_INLINE_FORBIDDEN	You cannot use inline bots to send messages in this chat
-CHAT_SEND_MEDIA_FORBIDDEN	You can't send media messages in this chat
-CHAT_SEND_POLL_FORBIDDEN	You can't send polls in this chat
+CHAT_SEND_MEDIA_FORBIDDEN	You cannot send media messages in this chat
+CHAT_SEND_PHOTOS_FORBIDDEN	You cannot send photos in this chat
+CHAT_SEND_PLAIN_FORBIDDEN	You cannot send text messages in this chat
+CHAT_SEND_POLL_FORBIDDEN	You cannot send polls in this chat
+CHAT_SEND_ROUNDVIDEOS_FORBIDDEN	You cannot send video notes in this chat
 CHAT_SEND_STICKERS_FORBIDDEN	You can't send stickers in this chat
+CHAT_SEND_VIDEOS_FORBIDDEN	You cannot send videos in this chat
 CHAT_WRITE_FORBIDDEN	You don't have rights to send messages in this chat
 EDIT_BOT_INVITE_FORBIDDEN	Bots' chat invite links can't be edited
 INLINE_BOT_REQUIRED	The action must be performed through an inline bot callback
