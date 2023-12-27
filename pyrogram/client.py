@@ -247,7 +247,7 @@ class Client(Methods):
         self.phone_code = phone_code
         self.password = password
         self.workers = workers
-        self.workdir = Path(workdir)
+        self.WORKDIR = Path(workdir)
         self.plugins = plugins
         self.parse_mode = parse_mode
         self.no_updates = no_updates
