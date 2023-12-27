@@ -162,7 +162,7 @@ class Chat(Object):
         distance: int = None,
         linked_chat: "types.Chat" = None,
         send_as_chat: "types.Chat" = None,
-        available_reactions: Optional["types.ChatReactions"] = None
+        available_reactions: Optional["types.ChatReactions"] = None,
         _raw: Union[
             "raw.types.Channel",
             "raw.types.Chat",

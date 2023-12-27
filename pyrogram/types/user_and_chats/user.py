@@ -174,7 +174,7 @@ class User(Object, Update):
         dc_id: int = None,
         phone_number: str = None,
         photo: "types.ChatPhoto" = None,
-        restrictions: List["types.Restriction"] = None
+        restrictions: List["types.Restriction"] = None,
         _raw: "raw.base.User" = None
     ):
         super().__init__(client)
