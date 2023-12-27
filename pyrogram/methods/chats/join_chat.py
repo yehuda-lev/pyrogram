@@ -49,6 +49,9 @@ class JoinChat:
                 # Join chat via username
                 await app.join_chat("pyrogram")
 
+                # Join chat via Telegram Public Link
+                await app.join_chat("https://t.me/pyrogram")
+
                 # Join a linked chat
                 await app.join_chat(app.get_chat("pyrogram").linked_chat.id)
         """
@@ -64,7 +67,11 @@ class JoinChat:
                 return types.Chat._parse_chat_chat(self, chat.chats[0])
             elif isinstance(chat.chats[0], raw.types.Channel):
                 return types.Chat._parse_channel_chat(self, chat.chats[0])
+
         else:
+            match2 = self.TME_PUBLIC_LINK_RE.match(str(chat_id))
+            if match2:
+                chat_id = match2.group(1)
             chat = await self.invoke(
                 raw.functions.channels.JoinChannel(
                     channel=await self.resolve_peer(chat_id)
