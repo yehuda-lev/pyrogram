@@ -1093,3 +1093,33 @@ users_shared: Filter = create(
 """Filter service messages for chat shared."""
 
 # endregion
+
+# noinspection PyPep8Naming
+class topic(Filter, set):
+    """Filter messages coming from one or more topics.
+
+    You can use `set bound methods <https://docs.python.org/3/library/stdtypes.html#set>`_ to manipulate the topics container.
+
+    Parameters:
+        message_thread_ids (``int`` | ``list``):
+            Pass one or more topic ids to filter messages in specific topics.
+            Defaults to None (no topics).
+
+    """
+
+    def __init__(self, message_thread_ids: Union[int, List[int]] = None):
+        topics = [] if message_thread_ids is None else message_thread_ids if isinstance(message_thread_ids, list) else [message_thread_ids]
+
+        super().__init__(
+            t for t in topics
+        )
+
+    async def __call__(self, _, message: Message):
+        return (
+            message.topic and
+            # TODO
+            message.topic.id in self
+        ) or (
+            message.message_thread_id and
+            message.message_thread_id in self
+        )
