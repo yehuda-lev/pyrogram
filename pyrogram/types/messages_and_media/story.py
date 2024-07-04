@@ -133,9 +133,11 @@ class Story(Object, Update):
 
     @staticmethod
     def _parse_story_item(
-        client,
-        story_item: "raw.types.StoryItem"
-    ):
+        client: "pyrogram.Client",
+        story_item: "raw.types.StoryItem",
+        chat: "types.Chat" = None,
+        story_id: int = None
+    ) -> "Story":
         date = None
         expire_date = None
         media = None
@@ -152,7 +154,9 @@ class Story(Object, Update):
         skipped = None
         deleted = None
 
-        if isinstance(story_item, raw.types.StoryItemDeleted):
+        if story_item is None:
+            pass
+        elif isinstance(story_item, raw.types.StoryItemDeleted):
             deleted = True
         elif isinstance(story_item, raw.types.StoryItemSkipped):
             skipped = True
@@ -181,139 +185,11 @@ class Story(Object, Update):
                     types.Reaction._parse_count(client, reaction)
                     for reaction in getattr(story_item.views, "reactions", [])
                 ] or None
-        return (
-            date,
-            expire_date,
-            media,
-            has_protected_content,
-            photo,
-            video,
-            edited,
-            pinned,
-            caption,
-            caption_entities,
-            views,
-            forwards,
-            reactions,
-            skipped,
-            deleted
-        )
-
-    @staticmethod
-    async def _parse(
-        client,
-        users: dict,
-        chats: dict,
-        story_media: "raw.types.MessageMediaStory",
-        reply_story: "raw.types.MessageReplyStoryHeader",
-        story_update: "raw.types.UpdateStory"
-    ) -> "Story":
-        story_id = None
-        chat = None
-
-        rawupdate = None
-
-        date = None
-        expire_date = None
-        media = None
-        has_protected_content = None
-        photo = None
-        video = None
-        edited = None
-        pinned = None
-        caption = None
-        caption_entities = None
-        views = None
-        forwards = None
-        reactions = None
-        skipped = None
-        deleted = None
-
-        if story_media:
-            rawupdate = story_media
-
-            if story_media.peer:
-                raw_peer_id = utils.get_raw_peer_id(story_media.peer)
-                if isinstance(story_media.peer, raw.types.PeerUser):
-                    chat = types.Chat._parse_chat(client, users.get(raw_peer_id))
-                else:
-                    chat = types.Chat._parse_chat(client, chats.get(raw_peer_id))
-            story_id = getattr(story_media, "id", None)
-        
-        if reply_story:
-            rawupdate = reply_story
-
-            if reply_story.peer:
-                raw_peer_id = utils.get_raw_peer_id(reply_story.peer)
-                if isinstance(reply_story.peer, raw.types.PeerUser):
-                    chat = types.Chat._parse_chat(client, users.get(raw_peer_id))
-                else:
-                    chat = types.Chat._parse_chat(client, chats.get(raw_peer_id))
-            story_id = getattr(reply_story, "story_id", None)
-        
-        if story_id and not client.me.is_bot:
-            try:
-                story_item = (
-                    await client.invoke(
-                        raw.functions.stories.GetStoriesByID(
-                            peer=await client.resolve_peer(raw_peer_id),
-                            id=[story_id]
-                        )
-                    )
-                ).stories[0]
-            except (RPCError, IndexError):
-                pass
-            else:
-                (
-                    date,
-                    expire_date,
-                    media,
-                    has_protected_content,
-                    photo,
-                    video,
-                    edited,
-                    pinned,
-                    caption,
-                    caption_entities,
-                    views,
-                    forwards,
-                    reactions,
-                    skipped,
-                    deleted
-                ) = Story._parse_story_item(client, story_item)
-        
-        if story_update:
-            rawupdate = story_update
-
-            raw_peer_id = utils.get_raw_peer_id(story_update.peer)
-            if isinstance(story_update.peer, raw.types.PeerUser):
-                chat = types.Chat._parse_chat(client, users.get(raw_peer_id))
-            else:
-                chat = types.Chat._parse_chat(client, chats.get(raw_peer_id))
-            
-            story_id = getattr(story_update.story, "id", None)
-            (
-                date,
-                expire_date,
-                media,
-                has_protected_content,
-                photo,
-                video,
-                edited,
-                pinned,
-                caption,
-                caption_entities,
-                views,
-                forwards,
-                reactions,
-                skipped,
-                deleted
-            ) = Story._parse_story_item(client, story_update.story)
-
+                
         return Story(
             client=client,
-            _raw=rawupdate,
-            id=story_id,
+            _raw=story_item,
+            id=story_id or getattr(story_item, "id", None),
             chat=chat,
             date=date,
             expire_date=expire_date,
@@ -330,6 +206,75 @@ class Story(Object, Update):
             reactions=reactions,
             skipped=skipped,
             deleted=deleted
+        )
+
+    @staticmethod
+    async def _parse(
+        client,
+        users: dict,
+        chats: dict,
+        story_media: "raw.types.MessageMediaStory",
+        reply_story: "raw.types.MessageReplyStoryHeader",
+        story_update: "raw.types.UpdateStory"
+    ) -> "Story":
+        story_id = None
+        chat = None
+
+        story_item = None
+
+        if story_media:
+
+            if story_media.peer:
+                raw_peer_id = utils.get_raw_peer_id(story_media.peer)
+                if isinstance(story_media.peer, raw.types.PeerUser):
+                    chat = types.Chat._parse_chat(client, users.get(raw_peer_id))
+                else:
+                    chat = types.Chat._parse_chat(client, chats.get(raw_peer_id))
+            story_id = getattr(story_media, "id", None)
+
+            story_item = getattr(story_media, "story", None)
+
+        if reply_story:
+
+            if reply_story.peer:
+                raw_peer_id = utils.get_raw_peer_id(reply_story.peer)
+                if isinstance(reply_story.peer, raw.types.PeerUser):
+                    chat = types.Chat._parse_chat(client, users.get(raw_peer_id))
+                else:
+                    chat = types.Chat._parse_chat(client, chats.get(raw_peer_id))
+            story_id = getattr(reply_story, "story_id", None)
+
+        if story_id and not client.me.is_bot:
+            try:
+                story_item = (
+                    await client.invoke(
+                        raw.functions.stories.GetStoriesByID(
+                            peer=await client.resolve_peer(raw_peer_id),
+                            id=[story_id]
+                        )
+                    )
+                ).stories[0]
+                
+            except (RPCError, IndexError):
+                pass
+
+        if story_update:
+
+            raw_peer_id = utils.get_raw_peer_id(story_update.peer)
+            if isinstance(story_update.peer, raw.types.PeerUser):
+                chat = types.Chat._parse_chat(client, users.get(raw_peer_id))
+            else:
+                chat = types.Chat._parse_chat(client, chats.get(raw_peer_id))
+            
+            story_id = getattr(story_update.story, "id", None)
+
+            story_item = getattr(story_update.story, "story", None)
+
+        return Story._parse_story_item(
+            client=client,
+            story_item=story_item,
+            chat=chat,
+            story_id=story_id
         )
 
     async def react(
