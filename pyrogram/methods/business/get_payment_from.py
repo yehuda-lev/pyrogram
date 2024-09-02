@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import re
 from typing import Union
 
 import pyrogram
@@ -68,7 +67,7 @@ class GetPaymentForm:
                 msg_id=message_id
             )
         elif invoice_link:
-            match = re.match(r"^(?:https?://)?(?:www\.)?(?:t(?:elegram)?\.(?:org|me|dog)/\$)([\w-]+)$", invoice_link)
+            match = self.INVITE_LINK_RE.match(invoice_link)
 
             if match:
                 slug = match.group(1)
