@@ -67,7 +67,7 @@ class GetPaymentForm:
                 msg_id=message_id
             )
         elif invoice_link:
-            match = self.INVITE_LINK_RE.match(invoice_link)
+            match = self.INVOICE_LINK_RE.match(invoice_link)
 
             if match:
                 slug = match.group(1)
