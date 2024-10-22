@@ -159,7 +159,7 @@ class CopyMessage:
             reply_markup=reply_markup,
             schedule_date=schedule_date,
             business_connection_id=business_connection_id,
-            send_as=send_as,  # TODO: Implement this
+            send_as=send_as,
             protect_content=protect_content,
             message_thread_id=message_thread_id
         )
